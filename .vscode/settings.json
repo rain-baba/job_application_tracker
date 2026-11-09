@@ -1,0 +1,39 @@
+
+{
+    "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+    "python.terminal.activateEnvironment": true,
+
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit",
+            "source.fixAll.ruff": "explicit"
+        }
+    },
+
+    "black-formatter.args": [
+        "--line-length",
+        "88"
+    ],
+
+    "isort.args": [
+        "--profile",
+        "black"
+    ],
+
+    "ruff.lint.enabled": true,
+    "ruff.lint.run": "onType",
+
+    "python.analysis.typeCheckingMode": "basic",
+
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.pytest_cache": true
+    },
+
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true
+}
