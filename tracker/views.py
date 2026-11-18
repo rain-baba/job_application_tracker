@@ -102,3 +102,28 @@ def application_list_api(request):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=201)
+
+
+@api_view(["GET", "PUT", "PATCH", "DELETE"])
+def application_detail_api(request, application_id):
+    application = get_object_or_404(Application, id=application_id)
+
+    if request.method == "GET":
+        serializer = ApplicationSerializer(application)
+        return Response(serializer.data)
+
+    elif request.method == "PUT":
+        serializer = ApplicationSerializer(application, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    elif request.method == "PATCH":
+        serializer = ApplicationSerializer(application, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    elif request.method == "DELETE":
+        application.delete()
+        return Response(status=204)

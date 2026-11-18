@@ -19,6 +19,7 @@ from django.contrib import admin
 from django.urls import path
 
 from tracker.views import (
+    application_detail_api,
     application_list_api,
     company_detail,
     company_detail_api,
@@ -37,4 +38,9 @@ urlpatterns = [
         "api/companies/<int:company_id>/", company_detail_api, name="api-company-detail"
     ),
     path("api/applications/", application_list_api, name="api-application-list"),
+    path(
+        "api/applications/<int:application_id>/",
+        application_detail_api,
+        name="api-application-detail",
+    ),
 ]
