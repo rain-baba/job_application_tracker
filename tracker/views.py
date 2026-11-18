@@ -97,7 +97,19 @@ def company_detail_api(request, company_id):
 def application_list_api(request):
 
     if request.method == "GET":
-        applications = Application.objects.all().order_by("-created_at")
+        applications = Application.objects.all()
+        status = request.query_params.get("status")
+
+        if status:
+            applications = applications.filter(status=status)
+
+        application_date = request.query_params.get("application_date")
+
+        if application_date:
+            applications = applications.filter(application_date=application_date)
+
+        applications = applications.order_by("-created_at")
+
         serializer = ApplicationSerializer(applications, many=True)
         return Response(serializer.data)
 
