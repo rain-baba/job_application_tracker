@@ -26,6 +26,8 @@ from tracker.views import (
     company_list,
     company_list_api,
     home,
+    interview_round_detail_api,
+    interview_round_list_api,
 )
 
 urlpatterns = [
@@ -42,5 +44,15 @@ urlpatterns = [
         "api/applications/<int:application_id>/",
         application_detail_api,
         name="api-application-detail",
+    ),
+    path(
+        "api/interview-rounds/",
+        interview_round_list_api,
+        name="api-interview-round-list",
+    ),
+    path(
+        "api/interview-rounds/<int:interview_round_id>/",
+        interview_round_detail_api,
+        name="api-interview-round-detail",
     ),
 ]

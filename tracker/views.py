@@ -3,8 +3,12 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .models import Application, Company
-from .serializers import ApplicationSerializer, CompanySerializer
+from .models import Application, Company, InterviewRound
+from .serializers import (
+    ApplicationSerializer,
+    CompanySerializer,
+    InterviewRoundSerializer,
+)
 
 
 def home(request):
@@ -126,4 +130,48 @@ def application_detail_api(request, application_id):
 
     elif request.method == "DELETE":
         application.delete()
+        return Response(status=204)
+
+
+@api_view(["GET", "POST"])
+def interview_round_list_api(request):
+
+    if request.method == "GET":
+        interview_rounds = InterviewRound.objects.all()
+        serializer = InterviewRoundSerializer(interview_rounds, many=True)
+        return Response(serializer.data)
+
+    elif request.method == "POST":
+        serializer = InterviewRoundSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=201)
+
+
+@api_view(["GET", "PUT", "PATCH", "DELETE"])
+def interview_round_detail_api(request, interview_round_id):
+    interview_round = get_object_or_404(InterviewRound, id=interview_round_id)
+
+    if request.method == "GET":
+        serializer = InterviewRoundSerializer(interview_round)
+        return Response(serializer.data)
+
+    elif request.method == "PUT":
+        serializer = InterviewRoundSerializer(interview_round, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    elif request.method == "PATCH":
+        serializer = InterviewRoundSerializer(
+            interview_round,
+            data=request.data,
+            partial=True,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    elif request.method == "DELETE":
+        interview_round.delete()
         return Response(status=204)

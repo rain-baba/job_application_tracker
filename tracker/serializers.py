@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Application, Company
+from .models import Application, Company, InterviewRound
 
 
 class CompanySerializer(serializers.ModelSerializer):
@@ -12,4 +12,10 @@ class CompanySerializer(serializers.ModelSerializer):
 class ApplicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Application
+        fields = "__all__"
+
+
+class InterviewRoundSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InterviewRound
         fields = "__all__"
