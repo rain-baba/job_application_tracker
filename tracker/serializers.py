@@ -10,6 +10,11 @@ class CompanySerializer(serializers.ModelSerializer):
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
+    company_name = serializers.CharField(
+        source="company.name",
+        read_only=True,
+    )
+
     class Meta:
         model = Application
         fields = "__all__"

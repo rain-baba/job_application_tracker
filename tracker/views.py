@@ -97,7 +97,7 @@ def company_detail_api(request, company_id):
 def application_list_api(request):
 
     if request.method == "GET":
-        applications = Application.objects.all()
+        applications = Application.objects.all().order_by("-created_at")
         serializer = ApplicationSerializer(applications, many=True)
         return Response(serializer.data)
 
