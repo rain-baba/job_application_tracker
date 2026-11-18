@@ -3,8 +3,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .models import Company
-from .serializers import CompanySerializer
+from .models import Application, Company
+from .serializers import ApplicationSerializer, CompanySerializer
 
 
 def home(request):
@@ -87,3 +87,18 @@ def company_detail_api(request, company_id):
     elif request.method == "DELETE":
         company.delete()
         return Response(status=204)
+
+
+@api_view(["GET", "POST"])
+def application_list_api(request):
+
+    if request.method == "GET":
+        applications = Application.objects.all()
+        serializer = ApplicationSerializer(applications, many=True)
+        return Response(serializer.data)
+
+    elif request.method == "POST":
+        serializer = ApplicationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=201)
