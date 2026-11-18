@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -213,3 +214,26 @@ def interview_round_detail_api(request, interview_round_id):
     elif request.method == "DELETE":
         interview_round.delete()
         return Response(status=204)
+
+
+@api_view(["GET"])
+def application_pipeline_api(request):
+    pipeline = Application.objects.values("status").annotate(total=Count("id"))
+
+    counts = {item["status"]: item["total"] for item in pipeline}
+    total_applications = Application.objects.count()
+
+    result = [
+        {
+            "status": status,
+            "total": counts.get(status, 0),
+        }
+        for status, label in Application.Status.choices
+    ]
+
+    return Response(
+        {
+            "total_applications": total_applications,
+            "pipeline": result,
+        }
+    )

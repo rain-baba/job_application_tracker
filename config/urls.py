@@ -21,6 +21,7 @@ from django.urls import path
 from tracker.views import (
     application_detail_api,
     application_list_api,
+    application_pipeline_api,
     company_detail,
     company_detail_api,
     company_list,
@@ -60,5 +61,10 @@ urlpatterns = [
         "api/interview-rounds/<int:interview_round_id>/",
         interview_round_detail_api,
         name="api-interview-round-detail",
+    ),
+    path(
+        "api/applications/pipeline/",
+        application_pipeline_api,
+        name="api-application-pipeline",
     ),
 ]
