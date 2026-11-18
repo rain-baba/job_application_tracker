@@ -18,11 +18,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from tracker.views import company_detail, company_list, home
+from tracker.views import company_detail, company_list, company_list_api, home
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", home, name="home"),
     path("companies/", company_list, name="company-list"),
     path("companies/<int:company_id>/", company_detail, name="company-detail"),
+    path("api/companies/", company_list_api, name="api-company-list"),
 ]
