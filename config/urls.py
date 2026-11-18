@@ -28,6 +28,7 @@ from tracker.views import (
     home,
     interview_round_detail_api,
     interview_round_list_api,
+    upcoming_interviews_api,
 )
 
 urlpatterns = [
@@ -49,6 +50,11 @@ urlpatterns = [
         "api/interview-rounds/",
         interview_round_list_api,
         name="api-interview-round-list",
+    ),
+    path(
+        "api/interview-rounds/upcoming/",
+        upcoming_interviews_api,
+        name="api-upcoming-interviews",
     ),
     path(
         "api/interview-rounds/<int:interview_round_id>/",

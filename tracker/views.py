@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -150,6 +151,19 @@ def interview_round_list_api(request):
 
     if request.method == "GET":
         interview_rounds = InterviewRound.objects.all()
+        outcome = request.query_params.get("outcome")
+
+        if outcome:
+            interview_rounds = interview_rounds.filter(outcome=outcome)
+
+        interview_date = request.query_params.get("interview_date")
+
+        if interview_date:
+            interview_rounds = interview_rounds.filter(
+                interview_date__date=interview_date
+            )
+        interview_rounds = interview_rounds.order_by("-interview_date")
+
         serializer = InterviewRoundSerializer(interview_rounds, many=True)
         return Response(serializer.data)
 
@@ -158,6 +172,18 @@ def interview_round_list_api(request):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=201)
+
+
+@api_view(["GET"])
+def upcoming_interviews_api(request):
+    interview_rounds = InterviewRound.objects.filter(
+        outcome="Pending",
+        interview_date__gte=timezone.now(),
+    ).order_by("interview_date")
+
+    serializer = InterviewRoundSerializer(interview_rounds, many=True)
+
+    return Response(serializer.data)
 
 
 @api_view(["GET", "PUT", "PATCH", "DELETE"])
