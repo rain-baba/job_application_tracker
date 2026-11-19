@@ -128,3 +128,13 @@ MAILERS = {
         "BACKEND": "django.core.mail.backends.console.EmailBackend",
     },
 }
+
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Job Application Tracker API",
+    "DESCRIPTION": "API documentation for managing companies, applications, and interview rounds.",
+    "VERSION": "1.0.0",
+}

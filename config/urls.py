@@ -17,6 +17,10 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularSwaggerView,
+)
 
 from tracker.views import (
     application_detail_api,
@@ -66,5 +70,11 @@ urlpatterns = [
         "api/applications/pipeline/",
         application_pipeline_api,
         name="api-application-pipeline",
+    ),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "api/docs/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
     ),
 ]
