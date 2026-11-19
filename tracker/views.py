@@ -2,7 +2,11 @@ from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from drf_spectacular.utils import extend_schema, inline_serializer
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    extend_schema,
+    inline_serializer,
+)
 from rest_framework import serializers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -53,32 +57,17 @@ def company_detail(request, company_id):
     request=CompanySerializer,
     responses={201: CompanySerializer},
 )
-@api_view(["GET", "POST"])  # Allow GET and POST requests
+@api_view(["GET", "POST"])
 def company_list_api(request):
-
-    # GET: Retrieve all companies from the database
     if request.method == "GET":
         companies = Company.objects.all()
-
-        # Convert multiple company objects into JSON-compatible data
         serializer = CompanySerializer(companies, many=True)
-
-        # Return the list of companies to the client
         return Response(serializer.data)
 
-    # POST: Create a new company
     elif request.method == "POST":
-
-        # Receive the submitted data and prepare it for validation
         serializer = CompanySerializer(data=request.data)
-
-        # Check whether the submitted data is valid
         serializer.is_valid(raise_exception=True)
-
-        # Save the validated company in the database
         serializer.save()
-
-        # Return the newly created company with HTTP 201 status
         return Response(serializer.data, status=201)
 
 
@@ -112,19 +101,12 @@ def company_list_api(request):
     description="Delete a company by its ID.",
     responses={204: None},
 )
-@api_view(["GET", "PUT", "PATCH", "DELETE"])  # Allow GET requests only
+@api_view(["GET", "PUT", "PATCH", "DELETE"])
 def company_detail_api(request, company_id):
-
-    # Find the company using its ID.
-    # If it doesn't exist, return HTTP 404 Not Found.
     company = get_object_or_404(Company, id=company_id)
 
     if request.method == "GET":
-        # Convert the company object into JSON-compatible data
-
         serializer = CompanySerializer(company)
-
-        # Return the company's information to the client
         return Response(serializer.data)
 
     elif request.method == "PUT":
@@ -132,11 +114,13 @@ def company_detail_api(request, company_id):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
     elif request.method == "PATCH":
         serializer = CompanySerializer(company, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
     elif request.method == "DELETE":
         company.delete()
         return Response(status=204)
@@ -147,6 +131,20 @@ def company_detail_api(request, company_id):
     tags=["2. Applications"],
     summary="List applications",
     description="Retrieve all job applications. Results can be filtered by status and application date.",
+    parameters=[
+        OpenApiParameter(
+            name="status",
+            type=str,
+            location=OpenApiParameter.QUERY,
+            description="Filter applications by status (Wishlist, Applied, Interview, Offer, or Rejected).",
+        ),
+        OpenApiParameter(
+            name="application_date",
+            type=str,
+            location=OpenApiParameter.QUERY,
+            description="Filter applications by application date (YYYY-MM-DD).",
+        ),
+    ],
     responses={200: ApplicationSerializer(many=True)},
 )
 @extend_schema(
@@ -159,16 +157,14 @@ def company_detail_api(request, company_id):
 )
 @api_view(["GET", "POST"])
 def application_list_api(request):
-
     if request.method == "GET":
         applications = Application.objects.all()
-        status = request.query_params.get("status")
 
+        status = request.query_params.get("status")
         if status:
             applications = applications.filter(status=status)
 
         application_date = request.query_params.get("application_date")
-
         if application_date:
             applications = applications.filter(application_date=application_date)
 
@@ -229,7 +225,11 @@ def application_detail_api(request, application_id):
         return Response(serializer.data)
 
     elif request.method == "PATCH":
-        serializer = ApplicationSerializer(application, data=request.data, partial=True)
+        serializer = ApplicationSerializer(
+            application,
+            data=request.data,
+            partial=True,
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
@@ -244,6 +244,20 @@ def application_detail_api(request, application_id):
     tags=["3. Interview Rounds"],
     summary="List interview rounds",
     description="Retrieve all interview rounds. Results can be filtered by outcome and interview date.",
+    parameters=[
+        OpenApiParameter(
+            name="outcome",
+            type=str,
+            location=OpenApiParameter.QUERY,
+            description="Filter interview rounds by outcome (Pending, Passed, or Failed).",
+        ),
+        OpenApiParameter(
+            name="interview_date",
+            type=str,
+            location=OpenApiParameter.QUERY,
+            description="Filter interview rounds by interview date (YYYY-MM-DD).",
+        ),
+    ],
     responses={200: InterviewRoundSerializer(many=True)},
 )
 @extend_schema(
@@ -256,20 +270,19 @@ def application_detail_api(request, application_id):
 )
 @api_view(["GET", "POST"])
 def interview_round_list_api(request):
-
     if request.method == "GET":
         interview_rounds = InterviewRound.objects.all()
-        outcome = request.query_params.get("outcome")
 
+        outcome = request.query_params.get("outcome")
         if outcome:
             interview_rounds = interview_rounds.filter(outcome=outcome)
 
         interview_date = request.query_params.get("interview_date")
-
         if interview_date:
             interview_rounds = interview_rounds.filter(
                 interview_date__date=interview_date
             )
+
         interview_rounds = interview_rounds.order_by("-interview_date")
 
         serializer = InterviewRoundSerializer(interview_rounds, many=True)
@@ -296,7 +309,6 @@ def upcoming_interviews_api(request):
     ).order_by("interview_date")
 
     serializer = InterviewRoundSerializer(interview_rounds, many=True)
-
     return Response(serializer.data)
 
 
