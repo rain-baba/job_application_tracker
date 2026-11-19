@@ -2,6 +2,8 @@ from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from drf_spectacular.utils import extend_schema, inline_serializer
+from rest_framework import serializers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -36,6 +38,21 @@ def company_detail(request, company_id):
     return HttpResponse("Method not allowed.")
 
 
+@extend_schema(
+    methods=["GET"],
+    tags=["1. Companies"],
+    summary="List all companies",
+    description="Retrieve all companies stored in the database.",
+    responses={200: CompanySerializer(many=True)},
+)
+@extend_schema(
+    methods=["POST"],
+    tags=["1. Companies"],
+    summary="Create a company",
+    description="Create a new company by submitting its details.",
+    request=CompanySerializer,
+    responses={201: CompanySerializer},
+)
 @api_view(["GET", "POST"])  # Allow GET and POST requests
 def company_list_api(request):
 
@@ -65,6 +82,36 @@ def company_list_api(request):
         return Response(serializer.data, status=201)
 
 
+@extend_schema(
+    methods=["GET"],
+    tags=["1. Companies"],
+    summary="Retrieve a company",
+    description="Retrieve the details of a company by its ID.",
+    responses={200: CompanySerializer},
+)
+@extend_schema(
+    methods=["PUT"],
+    tags=["1. Companies"],
+    summary="Update a company",
+    description="Replace all editable fields of a company.",
+    request=CompanySerializer,
+    responses={200: CompanySerializer},
+)
+@extend_schema(
+    methods=["PATCH"],
+    tags=["1. Companies"],
+    summary="Partially update a company",
+    description="Update selected fields of a company.",
+    request=CompanySerializer,
+    responses={200: CompanySerializer},
+)
+@extend_schema(
+    methods=["DELETE"],
+    tags=["1. Companies"],
+    summary="Delete a company",
+    description="Delete a company by its ID.",
+    responses={204: None},
+)
 @api_view(["GET", "PUT", "PATCH", "DELETE"])  # Allow GET requests only
 def company_detail_api(request, company_id):
 
@@ -95,6 +142,21 @@ def company_detail_api(request, company_id):
         return Response(status=204)
 
 
+@extend_schema(
+    methods=["GET"],
+    tags=["2. Applications"],
+    summary="List applications",
+    description="Retrieve all job applications. Results can be filtered by status and application date.",
+    responses={200: ApplicationSerializer(many=True)},
+)
+@extend_schema(
+    methods=["POST"],
+    tags=["2. Applications"],
+    summary="Create an application",
+    description="Create a new job application.",
+    request=ApplicationSerializer,
+    responses={201: ApplicationSerializer},
+)
 @api_view(["GET", "POST"])
 def application_list_api(request):
 
@@ -122,6 +184,36 @@ def application_list_api(request):
         return Response(serializer.data, status=201)
 
 
+@extend_schema(
+    methods=["GET"],
+    tags=["2. Applications"],
+    summary="Retrieve an application",
+    description="Retrieve the details of a job application by its ID.",
+    responses={200: ApplicationSerializer},
+)
+@extend_schema(
+    methods=["PUT"],
+    tags=["2. Applications"],
+    summary="Update an application",
+    description="Replace all editable fields of an existing job application.",
+    request=ApplicationSerializer,
+    responses={200: ApplicationSerializer},
+)
+@extend_schema(
+    methods=["PATCH"],
+    tags=["2. Applications"],
+    summary="Partially update an application",
+    description="Update selected fields of an existing job application.",
+    request=ApplicationSerializer,
+    responses={200: ApplicationSerializer},
+)
+@extend_schema(
+    methods=["DELETE"],
+    tags=["2. Applications"],
+    summary="Delete an application",
+    description="Delete a job application by its ID.",
+    responses={204: None},
+)
 @api_view(["GET", "PUT", "PATCH", "DELETE"])
 def application_detail_api(request, application_id):
     application = get_object_or_404(Application, id=application_id)
@@ -147,6 +239,21 @@ def application_detail_api(request, application_id):
         return Response(status=204)
 
 
+@extend_schema(
+    methods=["GET"],
+    tags=["3. Interview Rounds"],
+    summary="List interview rounds",
+    description="Retrieve all interview rounds. Results can be filtered by outcome and interview date.",
+    responses={200: InterviewRoundSerializer(many=True)},
+)
+@extend_schema(
+    methods=["POST"],
+    tags=["3. Interview Rounds"],
+    summary="Create an interview round",
+    description="Create a new interview round for an existing job application.",
+    request=InterviewRoundSerializer,
+    responses={201: InterviewRoundSerializer},
+)
 @api_view(["GET", "POST"])
 def interview_round_list_api(request):
 
@@ -175,6 +282,12 @@ def interview_round_list_api(request):
         return Response(serializer.data, status=201)
 
 
+@extend_schema(
+    summary="List upcoming interviews",
+    tags=["3. Interview Rounds"],
+    description="Retrieve pending interview rounds scheduled for the current time or a future date, ordered by interview date.",
+    responses={200: InterviewRoundSerializer(many=True)},
+)
 @api_view(["GET"])
 def upcoming_interviews_api(request):
     interview_rounds = InterviewRound.objects.filter(
@@ -187,6 +300,36 @@ def upcoming_interviews_api(request):
     return Response(serializer.data)
 
 
+@extend_schema(
+    methods=["GET"],
+    tags=["3. Interview Rounds"],
+    summary="Retrieve an interview round",
+    description="Retrieve the details of an interview round by its ID.",
+    responses={200: InterviewRoundSerializer},
+)
+@extend_schema(
+    methods=["PUT"],
+    tags=["3. Interview Rounds"],
+    summary="Update an interview round",
+    description="Replace all editable fields of an existing interview round.",
+    request=InterviewRoundSerializer,
+    responses={200: InterviewRoundSerializer},
+)
+@extend_schema(
+    methods=["PATCH"],
+    tags=["3. Interview Rounds"],
+    summary="Partially update an interview round",
+    description="Update selected fields of an existing interview round.",
+    request=InterviewRoundSerializer,
+    responses={200: InterviewRoundSerializer},
+)
+@extend_schema(
+    methods=["DELETE"],
+    tags=["3. Interview Rounds"],
+    summary="Delete an interview round",
+    description="Delete an interview round by its ID.",
+    responses={204: None},
+)
 @api_view(["GET", "PUT", "PATCH", "DELETE"])
 def interview_round_detail_api(request, interview_round_id):
     interview_round = get_object_or_404(InterviewRound, id=interview_round_id)
@@ -216,6 +359,28 @@ def interview_round_detail_api(request, interview_round_id):
         return Response(status=204)
 
 
+@extend_schema(
+    summary="Get application pipeline",
+    description="Return the total number of applications and counts grouped by application status.",
+    tags=["2. Applications"],
+    responses={
+        200: inline_serializer(
+            name="ApplicationPipelineResponse",
+            fields={
+                "total_applications": serializers.IntegerField(),
+                "pipeline": serializers.ListField(
+                    child=inline_serializer(
+                        name="ApplicationPipelineItem",
+                        fields={
+                            "status": serializers.CharField(),
+                            "total": serializers.IntegerField(),
+                        },
+                    )
+                ),
+            },
+        )
+    },
+)
 @api_view(["GET"])
 def application_pipeline_api(request):
     pipeline = Application.objects.values("status").annotate(total=Count("id"))

@@ -137,4 +137,9 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "Job Application Tracker API",
     "DESCRIPTION": "API documentation for managing companies, applications, and interview rounds.",
     "VERSION": "1.0.0",
+    "TAGS": [
+        {"name": "1. Companies"},
+        {"name": "2. Applications"},
+        {"name": "3. Interview Rounds"},
+    ],
 }
